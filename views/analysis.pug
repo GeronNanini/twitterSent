@@ -2,7 +2,9 @@ extends layout
 
 block content  
   h1 #{title}
-  h2 Overall sentiment for #{subtitle}
+  h2 The overall sentiment for #{subtitle} is #{overallSentiment}.
+
+
 
   //- p Positive sentiment counter: #{positiveSentiment}
   //- p Negative sentiment counter: #{negativeSentiment}
@@ -15,6 +17,8 @@ block content
     var posSentimentCount = JSON.parse('!{JSON.stringify(positiveSentiment)}');
 
   canvas(id="chart")
+  //- Load chart.js
+  script(src="https://cdn.jsdelivr.net/npm/chart.js@2.9.0/dist/Chart.min.js")
   script(src="javascripts/chart.js")
 
   div.tweetDisp
