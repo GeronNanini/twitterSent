@@ -1,0 +1,38 @@
+extends layout
+
+block content  
+  h1 #{title}
+  h2 Overall sentiment for #{subtitle}
+
+  //- p Positive sentiment counter: #{positiveSentiment}
+  //- p Negative sentiment counter: #{negativeSentiment}
+  //- p Neutral sentiment counter: #{neutralSentiment}
+
+  div.chartDisp
+  script.
+    var negSentimentCount = JSON.parse('!{JSON.stringify(negativeSentiment)}');
+    var neuSentimentCount = JSON.parse('!{JSON.stringify(neutralSentiment)}');
+    var posSentimentCount = JSON.parse('!{JSON.stringify(positiveSentiment)}');
+
+  canvas(id="chart")
+  script(src="javascripts/chart.js")
+
+  div.tweetDisp
+    h2 Positive Sentiment Tweets
+    div.posTweets
+      ol
+        each val in positiveTweets
+          li= val
+
+    h2 Neutral Sentiment Tweets
+    div.posTweets
+      ol
+        each val in neutralTweets
+          li= val
+
+    h2 Negative Sentiment Tweets
+    div.posTweets
+      ol
+        each val in negativeTweets
+          li= val
+
