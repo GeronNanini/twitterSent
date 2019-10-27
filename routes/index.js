@@ -12,16 +12,13 @@ const stemmer = require('natural').PorterStemmer;
 const analyzer = new Analyzer("English", stemmer, "afinn");
 
 // Temporary global variables for results (need to turn into JSON object for later storage)
-var results = {}
-
-var allTweets = [];
+var results = {};
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
   res.render('index', {
     title: 'Twitter Sentiment Analysis',
-    description: 'Find the overall sentiment of Twitter users regarding a particular topic',
-    trends: allTweets
+    description: 'Find the overall sentiment of Twitter users regarding a particular media topic',
   });
 });
 
@@ -48,26 +45,41 @@ router.get('/analysis', function (req, res, next) {
   // Search twitter for 100 tweets containing the specified query in the English language
   T.get('search/tweets', { q: searchQuery, count: 100, lang: 'en' }, function (err, data, response) {
     let tweets = data.statuses;
+
+    // Get unique tweets...
+    var allTweets = new Array();
+
+    // Put tweets into array
     for (var i = 0; i < tweets.length; i++) {
+      let tweet = tweets[i].text;
+      allTweets.push(tweet);
+    }
+
+    // Convert array of tweets into a set to only get unique values, then turn that set back into an array
+    let uniqueTweets = [...new Set(allTweets)];
+
+    //console.log(uniqueArray);
+
+    for (var i = 0; i < uniqueTweets.length; i++) {
 
       // Retrieve tweet text
-      let tweet = tweets[i].text;
+      let uniqueTweet = uniqueTweets[i];
 
       // Clean tweet text and split into array of substrings (required for sentiment analysis)
-      let tweetArrayified = tweet.replace(/RT\s*@\S+/g, '').split(" ");
+      let tweetArrayified = uniqueTweet.replace(/RT\s*@\S+/g, '').split(" ");
 
       // Perform sentiment analysis.
       // Organize tweets into 'results' object according to sentiment, and increment respective counters
       if (analyzer.getSentiment(tweetArrayified) > 0) {
-        results.positiveTweets.push(tweet);
+        results.positiveTweets.push(uniqueTweet);
         results.positiveSentiment.val++;
 
       } else if (analyzer.getSentiment(tweetArrayified) < 0) {
-        results.negativeTweets.push(tweet);
+        results.negativeTweets.push(uniqueTweet);
         results.negativeSentiment.val++;
 
       } else {
-        results.neutralTweets.push(tweet);
+        results.neutralTweets.push(uniqueTweet);
         results.neutralSentiment.val++;
       }
 
@@ -77,7 +89,7 @@ router.get('/analysis', function (req, res, next) {
       // --- however first we'll just try one hashtag and not even store it
 
     }
-    
+
     getOverallSentiment();
 
     res.render('analysis', {

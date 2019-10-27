@@ -6,3 +6,12 @@ body {
 a {
   color: #00B7FF;
 }
+
+ol{
+  height:200px; 
+  width:100%;}
+
+ol{
+  overflow:hidden; 
+  overflow-y:scroll;
+}
